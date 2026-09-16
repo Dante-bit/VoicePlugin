@@ -1,0 +1,741 @@
+/* ═══════════════════════════════════════════════════════════════
+   Voice Detected – Admin Panel Styles
+   ═══════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* ─── Variables ──────────────────────────────────────────────── */
+:root {
+    --vda-accent:    #6C63FF;
+    --vda-accent2:   #8B85FF;
+    --vda-bg:        #f8f7ff;
+    --vda-card:      #ffffff;
+    --vda-border:    #e5e3ff;
+    --vda-text:      #1a1a2e;
+    --vda-muted:     #7474a0;
+    --vda-green:     #2DD482;
+    --vda-red:       #FF5B7A;
+    --vda-radius:    14px;
+    --vda-shadow:    0 4px 24px rgba(108,99,255,0.08);
+    --vda-font:      'Inter', -apple-system, sans-serif;
+}
+
+/* ─── Layout ─────────────────────────────────────────────────── */
+.vd-admin-wrap {
+    font-family:    var(--vda-font);
+    max-width:      900px;
+    margin:         20px 20px 40px;
+    color:          var(--vda-text);
+}
+
+.vd-admin-header {
+    display:        flex;
+    align-items:    center;
+    gap:            14px;
+    margin-bottom:  28px;
+    padding-bottom: 20px;
+    border-bottom:  2px solid var(--vda-border);
+}
+
+.vd-admin-logo {
+    width:         48px;
+    height:        48px;
+    background:    linear-gradient(135deg, var(--vda-accent), var(--vda-accent2));
+    border-radius: 14px;
+    display:       flex;
+    align-items:   center;
+    justify-content: center;
+    font-size:     24px;
+    color:         #fff;
+    box-shadow:    0 4px 16px rgba(108,99,255,0.35);
+}
+
+.vd-admin-title {
+    font-size:   22px;
+    font-weight: 700;
+    color:       var(--vda-text);
+    margin:      0;
+}
+
+.vd-admin-subtitle {
+    font-size: 13px;
+    color:     var(--vda-muted);
+    margin:    2px 0 0;
+}
+
+/* ─── Tabs ───────────────────────────────────────────────────── */
+.vd-tabs {
+    display:       flex;
+    gap:           4px;
+    margin-bottom: 24px;
+    border-bottom: 2px solid var(--vda-border);
+    padding-bottom: 0;
+}
+
+.vd-tab-btn {
+    padding:       10px 20px;
+    border:        none;
+    background:    transparent;
+    color:         var(--vda-muted);
+    font-family:   var(--vda-font);
+    font-size:     14px;
+    font-weight:   500;
+    cursor:        pointer;
+    border-radius: 8px 8px 0 0;
+    position:      relative;
+    transition:    color 0.2s, background 0.2s;
+}
+
+.vd-tab-btn::after {
+    content:    '';
+    position:   absolute;
+    bottom:     -2px;
+    left:       0;
+    right:      0;
+    height:     2px;
+    background: var(--vda-accent);
+    opacity:    0;
+    transition: opacity 0.2s;
+}
+
+.vd-tab-btn.active,
+.vd-tab-btn:hover {
+    color:      var(--vda-accent);
+    background: rgba(108, 99, 255, 0.05);
+}
+
+.vd-tab-btn.active::after { opacity: 1; }
+
+.vd-tab-pane  { display: none; }
+.vd-tab-pane.active { display: block; }
+
+/* ─── Card ───────────────────────────────────────────────────── */
+.vd-card {
+    background:    var(--vda-card);
+    border:        1px solid var(--vda-border);
+    border-radius: var(--vda-radius);
+    padding:       24px;
+    margin-bottom: 20px;
+    box-shadow:    var(--vda-shadow);
+}
+
+.vd-card-title {
+    font-size:    15px;
+    font-weight:  700;
+    color:        var(--vda-text);
+    margin:       0 0 18px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--vda-border);
+    display:      flex;
+    align-items:  center;
+    gap:          8px;
+}
+
+/* ─── Form Fields ────────────────────────────────────────────── */
+.vd-form-row {
+    display:       grid;
+    grid-template-columns: 200px 1fr;
+    align-items:   start;
+    gap:           12px;
+    margin-bottom: 18px;
+}
+
+.vd-form-row label {
+    font-size:   13px;
+    font-weight: 600;
+    color:       var(--vda-text);
+    padding-top: 10px;
+}
+
+.vd-form-row .vd-hint {
+    font-size: 11px;
+    color:     var(--vda-muted);
+    margin-top: 5px;
+    line-height: 1.5;
+}
+
+.vd-input,
+.vd-select {
+    width:         100%;
+    padding:       10px 14px;
+    border:        1.5px solid var(--vda-border);
+    border-radius: 10px;
+    font-family:   var(--vda-font);
+    font-size:     14px;
+    color:         var(--vda-text);
+    background:    var(--vda-bg);
+    outline:       none;
+    transition:    border-color 0.2s, box-shadow 0.2s;
+    box-sizing:    border-box;
+}
+
+.vd-input:focus,
+.vd-select:focus {
+    border-color: var(--vda-accent);
+    box-shadow:   0 0 0 3px rgba(108, 99, 255, 0.12);
+}
+
+/* ─── API Key field with inline button ───────────────────────── */
+.vd-key-row {
+    display: flex;
+    gap:     8px;
+}
+
+.vd-key-row .vd-input { flex: 1; }
+
+/* ─── Buttons ────────────────────────────────────────────────── */
+.vd-btn {
+    display:       inline-flex;
+    align-items:   center;
+    gap:           6px;
+    padding:       10px 20px;
+    border-radius: 10px;
+    font-family:   var(--vda-font);
+    font-size:     14px;
+    font-weight:   600;
+    cursor:        pointer;
+    border:        none;
+    transition:    opacity 0.2s, transform 0.15s;
+}
+.vd-btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+.vd-btn:disabled             { opacity: 0.5; cursor: not-allowed; }
+
+.vd-btn-primary   { background: linear-gradient(135deg, var(--vda-accent), var(--vda-accent2)); color: #fff; }
+.vd-btn-secondary { background: var(--vda-bg); color: var(--vda-accent); border: 1.5px solid var(--vda-border); }
+.vd-btn-danger    { background: var(--vda-red); color: #fff; }
+.vd-btn-sm        { padding: 7px 14px; font-size: 13px; }
+
+/* ─── Validation message ─────────────────────────────────────── */
+.vd-validation-msg {
+    font-size:   13px;
+    font-weight: 500;
+    margin-top:  8px;
+    min-height:  20px;
+}
+.vd-success { color: var(--vda-green); }
+.vd-error   { color: var(--vda-red); }
+
+/* ─── Radio / Checkbox groups ─────────────────────────────────── */
+.vd-radio-group,
+.vd-check-group {
+    display:        flex;
+    flex-direction: column;
+    gap:            8px;
+    padding-top:    6px;
+}
+
+.vd-radio-group label,
+.vd-check-group label {
+    display:     flex;
+    align-items: center;
+    gap:         8px;
+    font-size:   14px;
+    color:       var(--vda-text);
+    font-weight: 400;
+    cursor:      pointer;
+    padding:     0;
+}
+
+.vd-radio-group input[type="radio"],
+.vd-check-group input[type="checkbox"] {
+    accent-color: var(--vda-accent);
+    width:        16px;
+    height:       16px;
+    cursor:       pointer;
+}
+
+/* ─── Range slider ───────────────────────────────────────────── */
+.vd-slider-row {
+    display:     flex;
+    align-items: center;
+    gap:         12px;
+}
+
+.vd-slider-row input[type="range"] {
+    flex:        1;
+    accent-color: var(--vda-accent);
+}
+
+.vd-slider-val {
+    font-size:  13px;
+    font-weight: 600;
+    color:      var(--vda-accent);
+    min-width:  36px;
+}
+
+/* ─── Info box ────────────────────────────────────────────────── */
+.vd-info-box {
+    background:    rgba(108, 99, 255, 0.06);
+    border:        1px solid rgba(108, 99, 255, 0.2);
+    border-left:   4px solid var(--vda-accent);
+    border-radius: 10px;
+    padding:       14px 16px;
+    font-size:     13px;
+    color:         var(--vda-text);
+    line-height:   1.6;
+    margin-bottom: 20px;
+}
+
+.vd-info-box code {
+    background:    rgba(108, 99, 255, 0.12);
+    padding:       2px 6px;
+    border-radius: 5px;
+    font-family:   monospace;
+    color:         var(--vda-accent);
+}
+
+/* ─── Status badge ────────────────────────────────────────────── */
+.vd-status-badge {
+    display:       inline-flex;
+    align-items:   center;
+    gap:           5px;
+    padding:       4px 10px;
+    border-radius: 20px;
+    font-size:     12px;
+    font-weight:   600;
+}
+.vd-status-badge.active   { background: rgba(45, 212, 130, 0.12); color: var(--vda-green); }
+.vd-status-badge.inactive { background: rgba(255, 91, 122, 0.12); color: var(--vda-red); }
+
+/* ─── History table ───────────────────────────────────────────── */
+.vd-history-wrap { font-family: var(--vda-font); }
+
+.vd-history-table {
+    border-radius: 12px;
+    overflow:      hidden;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.vd-history-table th {
+    background:  var(--vda-accent);
+    color:       #fff;
+    font-family: var(--vda-font);
+    font-size:   12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding:     10px 14px;
+}
+
+.vd-history-table td {
+    padding:  10px 14px;
+    font-size: 13px;
+}
+
+.vd-badge {
+    display:       inline-flex;
+    align-items:   center;
+    justify-content: center;
+    width:         22px;
+    height:        22px;
+    border-radius: 50%;
+    font-size:     12px;
+    font-weight:   700;
+}
+.vd-badge-ok   { background: rgba(45, 212, 130, 0.15); color: #2DD482; }
+.vd-badge-fail { background: rgba(255, 91, 122, 0.15); color: #FF5B7A; }
+
+/* ─── Shortcode box ───────────────────────────────────────────── */
+.vd-shortcode-box {
+    display:       flex;
+    align-items:   center;
+    gap:           10px;
+    background:    var(--vda-bg);
+    border:        1.5px solid var(--vda-border);
+    border-radius: 10px;
+    padding:       10px 14px;
+}
+
+.vd-shortcode-box code {
+    flex:        1;
+    font-family: monospace;
+    font-size:   13px;
+    color:       var(--vda-accent);
+}
+
+/* ─── Engine Options & Badges ─────────────────────────────────── */
+.vd-engine-option {
+    display:       flex !important;
+    align-items:   flex-start !important;
+    gap:           12px !important;
+    padding:       12px 14px;
+    border:        1.5px solid var(--vda-border);
+    border-radius: 12px;
+    background:    var(--vda-bg);
+    transition:    border-color 0.2s, background 0.2s;
+    cursor:        pointer;
+}
+.vd-engine-option:hover {
+    border-color: var(--vda-accent);
+    background:   rgba(108, 99, 255, 0.04);
+}
+.vd-engine-option input[type="radio"] {
+    margin-top: 3px;
+}
+
+.vd-badge-rec {
+    display: inline-block;
+    background: linear-gradient(135deg, #10B981, #059669);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 20px;
+    margin-left: 6px;
+    text-transform: uppercase;
+}
+
+.vd-badge-free {
+    display: inline-block;
+    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 20px;
+    margin-left: 6px;
+    text-transform: uppercase;
+}
+
+.vd-toggle-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+/* ─── Color Picker & Preset Chips ────────────────────────────── */
+.vd-color-picker-wrap {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+.vd-color-input {
+    width: 44px;
+    height: 40px;
+    padding: 0;
+    border: 1.5px solid var(--vda-border);
+    border-radius: 8px;
+    cursor: pointer;
+    background: transparent;
+}
+.vd-preset-colors {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+.vd-color-chip {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    transition: transform 0.15s, outline 0.15s;
+    outline: 2px solid transparent;
+}
+.vd-color-chip:hover {
+    transform: scale(1.15);
+    outline: 2px solid var(--vda-text);
+}
+
+/* ─── Live Preview Section ───────────────────────────────────── */
+.vd-preview-section {
+    margin-top: 26px;
+    padding-top: 18px;
+    border-top: 1.5px dashed var(--vda-border);
+}
+.vd-preview-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--vda-text);
+    margin: 0 0 12px;
+}
+.vd-preview-canvas {
+    background: #090D16;
+    border-radius: 16px;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 14px;
+    position: relative;
+    overflow: hidden;
+    background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+    background-size: 16px 16px;
+}
+.vd-mock-panel {
+    width: 320px;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 16px;
+    padding: 14px 16px;
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+.vd-mock-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+}
+.vd-mock-orb {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10B981;
+    display: inline-block;
+    box-shadow: 0 0 8px #10B981;
+}
+.vd-mock-badge {
+    font-size: 9px;
+    font-weight: 700;
+    color: #A5B4FC;
+    background: rgba(99, 102, 241, 0.2);
+    padding: 2px 6px;
+    border-radius: 10px;
+}
+.vd-mock-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 0 10px;
+}
+.vd-mdot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+}
+.vd-mock-text {
+    font-size: 13px;
+    font-weight: 600;
+    color: #FDA4AF;
+    text-align: center;
+    margin-bottom: 10px;
+}
+.vd-mock-chips {
+    display: flex;
+    gap: 6px;
+    overflow-x: hidden;
+}
+.vd-mchip {
+    font-size: 10px;
+    padding: 4px 8px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 12px;
+    color: #CBD5E1;
+    white-space: nowrap;
+}
+.vd-mock-btn {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+    transition: transform 0.2s, background 0.2s;
+}
+
+/* ─── Commands Table ─────────────────────────────────────────── */
+.vd-cmd-table th {
+    background: var(--vda-card) !important;
+    color: var(--vda-text) !important;
+    border-bottom: 2px solid var(--vda-border) !important;
+}
+.vd-cmd-table td code {
+    background: rgba(99, 102, 241, 0.1);
+    color: var(--vda-accent);
+    padding: 2px 6px;
+    border-radius: 6px;
+    font-size: 12px;
+}
+
+/* ─── TAB 7: Analytics & Voice SEO Dashboard ────────────────── */
+.vd-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+}
+.vd-kpi-card {
+    background: var(--vda-card);
+    border: 1px solid var(--vda-border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    box-shadow: var(--vda-shadow);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.vd-kpi-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+}
+.vd-kpi-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    background: rgba(99, 102, 241, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+}
+.vd-kpi-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+.vd-kpi-label {
+    font-size: 12px;
+    color: var(--vda-muted);
+    font-weight: 600;
+}
+.vd-kpi-val {
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--vda-text);
+}
+.vd-val-success { color: #10B981 !important; }
+.vd-val-ai      { color: #8B5CF6 !important; }
+.vd-val-search  { color: #3B82F6 !important; }
+
+/* 2-Column Analytics */
+.vd-analytics-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+}
+@media (max-width: 900px) {
+    .vd-analytics-grid { grid-template-columns: 1fr; }
+}
+.vd-analytics-col {
+    background: var(--vda-card);
+    border: 1px solid var(--vda-border);
+    border-radius: 12px;
+    padding: 20px;
+}
+.vd-col-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+    color: var(--vda-text);
+}
+.vd-col-sub {
+    font-size: 12px;
+    color: var(--vda-muted);
+    margin: 0 0 16px 0;
+    line-height: 1.45;
+}
+.vd-analytics-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* Query Items */
+.vd-query-item {
+    background: rgba(0, 0, 0, 0.02);
+    border: 1px solid var(--vda-border);
+    border-radius: 8px;
+    padding: 10px 14px;
+}
+.vd-query-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    font-size: 13px;
+    gap: 8px;
+}
+.vd-query-rank {
+    font-weight: 800;
+    color: var(--vda-accent);
+    font-size: 12px;
+    width: 24px;
+}
+.vd-query-text {
+    flex: 1;
+    font-weight: 600;
+    color: var(--vda-text);
+}
+.vd-query-count {
+    font-size: 12px;
+    color: var(--vda-muted);
+}
+.vd-bar-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(0, 0, 0, 0.06);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.vd-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #6366F1, #3B82F6);
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+
+/* Content Gap Items */
+.vd-gap-item {
+    background: rgba(245, 158, 11, 0.05);
+    border: 1px solid rgba(245, 158, 11, 0.25);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+.vd-gap-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+.vd-gap-query {
+    font-weight: 700;
+    color: var(--vda-text);
+    font-size: 13px;
+}
+.vd-gap-badge {
+    background: rgba(245, 158, 11, 0.15);
+    color: #D97706;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 12px;
+    flex-shrink: 0;
+}
+.vd-gap-tip {
+    font-size: 12px;
+    color: var(--vda-muted);
+    line-height: 1.4;
+}
+
+/* States */
+.vd-loading-state, .vd-empty-box, .vd-error-box {
+    padding: 20px;
+    text-align: center;
+    font-size: 13px;
+    color: var(--vda-muted);
+    border: 1px dashed var(--vda-border);
+    border-radius: 8px;
+}
+.vd-error-box {
+    color: #EF4444;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
