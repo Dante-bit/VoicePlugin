@@ -1,0 +1,297 @@
+/**
+ * Text to Speech Reader AI Pro — Front-end Player & Highlighting Styles v3.0
+ */
+
+/* ---------------------------------------------------------------
+ * Container / wrapper thanh player
+ * --------------------------------------------------------------- */
+.tts-reader-wrapper {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+	margin: 24px 0;
+	padding: 12px 18px;
+	border: 1.5px solid #e2e8f0;
+	border-radius: 12px;
+	background: #ffffff;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	font-size: 13.5px;
+	box-shadow: 0 4px 15px -3px rgba(0, 0, 0, 0.05), 0 2px 6px -2px rgba(0, 0, 0, 0.03);
+	transition: all 0.25s ease;
+	position: relative;
+	z-index: 10;
+}
+
+.tts-reader-wrapper.is-playing {
+	border-color: #4f46e5;
+	box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.12), 0 4px 15px -3px rgba(79, 70, 229, 0.1);
+	background: linear-gradient(135deg, #ffffff 0%, #fbfbfe 100%);
+}
+
+.tts-reader-wrapper.is-paused {
+	border-color: #f59e0b;
+	box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.12);
+}
+
+/* ---------------------------------------------------------------
+ * Nút điều khiển chung
+ * --------------------------------------------------------------- */
+.tts-reader-btn {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 7px;
+	cursor: pointer;
+	border: none;
+	border-radius: 8px;
+	padding: 8px 16px;
+	font-size: 13.5px;
+	font-weight: 600;
+	line-height: 1;
+	transition: all 0.2s ease;
+	user-select: none;
+	height: 38px;
+	box-sizing: border-box;
+}
+
+/* Nút Play / Pause */
+.tts-reader-btn.tts-reader-play {
+	background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%);
+	color: #ffffff;
+	box-shadow: 0 2px 6px rgba(79, 70, 229, 0.28);
+}
+
+.tts-reader-btn.tts-reader-play:hover {
+	background: linear-gradient(135deg, #4338ca 0%, #3730a3 100%);
+	box-shadow: 0 4px 12px rgba(79, 70, 229, 0.38);
+	transform: translateY(-1px);
+}
+
+.tts-reader-btn.tts-reader-play:active {
+	transform: translateY(0);
+}
+
+/* Nút Dừng (Stop) */
+.tts-reader-btn.tts-reader-stop {
+	background: #fee2e2;
+	color: #dc2626;
+	padding: 8px 12px;
+}
+
+.tts-reader-btn.tts-reader-stop:hover {
+	background: #fecaca;
+	color: #b91c1c;
+}
+
+/* Nút Tải xuống MP3 */
+.tts-reader-btn.tts-reader-download {
+	background: #f1f5f9;
+	color: #334155;
+	border: 1px solid #e2e8f0;
+	padding: 8px 14px;
+	margin-left: auto;
+}
+
+.tts-reader-btn.tts-reader-download:hover {
+	background: #e2e8f0;
+	color: #0f172a;
+}
+
+.tts-reader-btn.tts-reader-download.is-loading {
+	opacity: 0.8;
+	pointer-events: none;
+}
+
+.tts-reader-btn.tts-reader-download.is-success {
+	background: #dcfce7;
+	color: #15803d;
+	border-color: #bbf7d0;
+}
+
+/* ---------------------------------------------------------------
+ * Icon SVG trong nút
+ * --------------------------------------------------------------- */
+.tts-icon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+}
+
+.tts-icon-play .tts-svg-pause {
+	display: none;
+}
+
+.tts-reader-wrapper.is-playing .tts-icon-play .tts-svg-play {
+	display: none;
+}
+
+.tts-reader-wrapper.is-playing .tts-icon-play .tts-svg-pause {
+	display: block;
+}
+
+/* Spinner xoay khi tải MP3 */
+.tts-download-spinner {
+	width: 14px;
+	height: 14px;
+	border: 2px solid #94a3b8;
+	border-top-color: #4f46e5;
+	border-radius: 50%;
+	animation: ttsSpin 0.8s linear infinite;
+	display: inline-block;
+}
+
+@keyframes ttsSpin {
+	to { transform: rotate(360deg); }
+}
+
+/* ---------------------------------------------------------------
+ * Hiệu ứng sóng âm thanh (Equalizer Wave)
+ * --------------------------------------------------------------- */
+.tts-wave {
+	display: none;
+	align-items: flex-end;
+	gap: 3px;
+	height: 20px;
+	margin: 0 4px;
+}
+
+.tts-reader-wrapper.is-playing .tts-wave {
+	display: flex;
+}
+
+.tts-wave span {
+	display: inline-block;
+	width: 3.5px;
+	border-radius: 2px;
+	background: #4f46e5;
+	animation: tts-wave-bar 0.9s ease-in-out infinite alternate;
+	transform-origin: bottom;
+}
+
+.tts-wave span:nth-child(1) { animation-delay: 0.1s; height: 8px; }
+.tts-wave span:nth-child(2) { animation-delay: 0.3s; height: 16px; }
+.tts-wave span:nth-child(3) { animation-delay: 0.5s; height: 20px; }
+.tts-wave span:nth-child(4) { animation-delay: 0.2s; height: 14px; }
+.tts-wave span:nth-child(5) { animation-delay: 0.4s; height: 9px; }
+
+@keyframes tts-wave-bar {
+	0%   { height: 4px; opacity: 0.5; }
+	100% { height: 20px; opacity: 1; }
+}
+
+/* ---------------------------------------------------------------
+ * Bộ chọn giọng đọc & Tốc độ
+ * --------------------------------------------------------------- */
+.tts-control-item {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	background: #f8fafc;
+	border: 1px solid #e2e8f0;
+	border-radius: 8px;
+	padding: 2px 8px;
+	height: 38px;
+	box-sizing: border-box;
+}
+
+.tts-control-icon {
+	font-size: 14px;
+}
+
+.tts-reader-voice, .tts-reader-speed {
+	background: transparent;
+	border: none;
+	font-size: 13px;
+	font-weight: 500;
+	color: #334155;
+	cursor: pointer;
+	padding: 4px 2px;
+	outline: none;
+}
+
+.tts-reader-voice:focus, .tts-reader-speed:focus {
+	outline: none;
+}
+
+/* ---------------------------------------------------------------
+ * HIỆU ỨNG TÔ SÁNG VĂN BẢN (TEXT HIGHLIGHTING)
+/* ---------------------------------------------------------------
+ * HIỆU ỨNG TÔ SÁNG 1 CHỮ DUY NHẤT ĐANG ĐỌC (WORD-BY-WORD HIGHLIGHT)
+ * --------------------------------------------------------------- */
+.tts-word {
+	display: inline;
+	border-radius: 4px;
+	padding: 1px 2px;
+	transition: background-color 0.12s ease, color 0.12s ease;
+	position: relative;
+}
+
+/* CHỈ TÔ SÁNG ĐÚNG 1 CHỮ DUY NHẤT ĐANG ĐỌC */
+.tts-word.tts-word-active {
+	background-color: #facc15 !important;
+	color: #000000 !important;
+	font-weight: 700 !important;
+	box-shadow: 0 0 0 2px #facc15, 0 2px 6px rgba(0, 0, 0, 0.18) !important;
+	border-radius: 4px !important;
+	z-index: 2;
+}
+
+/* Màu Xanh Ngọc (Emerald) */
+.tts-highlight-theme-emerald .tts-word.tts-word-active {
+	background-color: #10b981 !important;
+	color: #ffffff !important;
+	box-shadow: 0 0 0 2px #10b981, 0 2px 6px rgba(16, 185, 129, 0.3) !important;
+}
+
+/* Màu Xanh Dương (Blue) */
+.tts-highlight-theme-blue .tts-word.tts-word-active {
+	background-color: #0284c7 !important;
+	color: #ffffff !important;
+	box-shadow: 0 0 0 2px #0284c7, 0 2px 6px rgba(2, 132, 199, 0.3) !important;
+}
+
+/* Màu Cam Đào (Orange) */
+.tts-highlight-theme-orange .tts-word.tts-word-active {
+	background-color: #ea580c !important;
+	color: #ffffff !important;
+	box-shadow: 0 0 0 2px #ea580c, 0 2px 6px rgba(234, 88, 12, 0.3) !important;
+}
+
+/* ---------------------------------------------------------------
+ * Hộp thông báo lỗi / chú ý
+ * --------------------------------------------------------------- */
+.tts-reader-notice {
+	width: 100%;
+	font-size: 12.5px;
+	color: #92400e;
+	background: #fffbeb;
+	border: 1px solid #fde68a;
+	border-radius: 6px;
+	padding: 8px 12px;
+	margin-top: 8px;
+	line-height: 1.5;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+	.tts-reader-wrapper {
+		flex-direction: column;
+		align-items: stretch;
+		gap: 8px;
+	}
+
+	.tts-reader-btn.tts-reader-download {
+		margin-left: 0;
+	}
+
+	.tts-control-item {
+		width: 100%;
+		justify-content: space-between;
+	}
+
+	.tts-reader-voice {
+		width: 100%;
+	}
+}
