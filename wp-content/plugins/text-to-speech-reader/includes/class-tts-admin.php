@@ -1,12 +1,7 @@
 <?php
 /**
- * Đăng ký menu quản lý riêng cho plugin trên sidebar khu vực quản trị
- * (thay vì ẩn trong menu "Settings" mặc định của WordPress).
- *
- * Cấu trúc menu:
- *   TTS Reader (top-level, icon loa)
- *     ├── Tổng quan   -> trang dashboard riêng của plugin
- *     └── Cài đặt     -> TTS_Settings::render_settings_page()
+ * Quản lý Dashboard và giao diện quản trị cho TTS Reader v3.0.
+ * Cung cấp Studio thử giọng trực tiếp, thống kê trực quan và bộ tạo shortcode.
  *
  * @package TTS_Reader
  */
@@ -21,13 +16,11 @@ class TTS_Admin {
 
 	/**
 	 * Tạo mục menu cấp cao nhất + submenu "Tổng quan".
-	 * Chạy trước TTS_Settings::add_settings_page() (priority thấp hơn)
-	 * để đảm bảo menu cha đã tồn tại khi thêm submenu "Cài đặt".
 	 */
 	public function register_menu() {
 		add_menu_page(
-			__( 'Text to Speech Reader', 'tts-reader' ),
-			__( 'TTS Reader', 'tts-reader' ),
+			__( 'Text to Speech Reader AI', 'tts-reader' ),
+			__( 'TTS Reader AI', 'tts-reader' ),
 			'manage_options',
 			self::MENU_SLUG,
 			array( $this, 'render_dashboard' ),
@@ -37,8 +30,8 @@ class TTS_Admin {
 
 		add_submenu_page(
 			self::MENU_SLUG,
-			__( 'Tổng quan', 'tts-reader' ),
-			__( 'Tổng quan', 'tts-reader' ),
+			__( 'Tổng quan & Studio', 'tts-reader' ),
+			__( 'Tổng quan & Studio', 'tts-reader' ),
 			'manage_options',
 			self::MENU_SLUG,
 			array( $this, 'render_dashboard' )
@@ -46,7 +39,7 @@ class TTS_Admin {
 	}
 
 	/**
-	 * Nạp CSS/JS riêng cho trang dashboard của plugin (chỉ trên đúng trang này).
+	 * Nạp CSS/JS riêng cho trang quản trị của plugin.
 	 *
 	 * @param string $hook Hook suffix của trang admin hiện tại.
 	 */
@@ -70,25 +63,31 @@ class TTS_Admin {
 			true
 		);
 
+		$settings = TTS_Settings::get_settings();
+
 		wp_localize_script(
 			'tts-reader-admin-script',
 			'ttsAdminConfig',
 			array(
-				'testText' => __( 'Xin chào, đây là bản kiểm tra giọng đọc tiếng Việt của plugin Text to Speech Reader. Giọng nữ tự nhiên của Google đang đọc nội dung này.', 'tts-reader' ),
-				'proxyUrl' => admin_url( 'admin-ajax.php' ),
-				'i18n'     => array(
-					'checking'   => __( 'Đang kiểm tra danh sách giọng đọc...', 'tts-reader' ),
-					'found'      => __( 'Đã tìm thấy giọng đọc tiếng Việt:', 'tts-reader' ),
-					'notFound'   => __( 'Không tìm thấy giọng đọc tiếng Việt nào trên trình duyệt/thiết bị này.', 'tts-reader' ),
-					'unsupported'=> __( 'Trình duyệt này không hỗ trợ Web Speech API.', 'tts-reader' ),
-					'error'      => __( 'Không thể tải giọng đọc. Kiểm tra kết nối mạng.', 'tts-reader' ),
+				'proxyUrl'     => admin_url( 'admin-ajax.php' ),
+				'defaultRate'  => (float) $settings['default_rate'],
+				'defaultLang'  => $settings['default_lang'],
+				'testSample'   => __( 'Xin chào quý độc giả! Đây là hệ thống đọc bài viết tự động. Giọng đọc được tối ưu mượt mà, hỗ trợ tự động tô sáng đúng một chữ đang được đọc và cho phép bạn tải về nghe offline mọi lúc mọi nơi.', 'tts-reader' ),
+				'i18n'         => array(
+					'copied'     => __( 'Đã sao chép shortcode vào bộ nhớ tạm!', 'tts-reader' ),
+					'copyFail'   => __( 'Không thể sao chép, vui lòng bôi đen và nhấn Ctrl+C', 'tts-reader' ),
+					'playing'    => __( 'Đang phát âm thanh...', 'tts-reader' ),
+					'paused'     => __( 'Đã tạm dừng', 'tts-reader' ),
+					'stopped'    => __( 'Đã dừng phát', 'tts-reader' ),
+					'btnPlay'    => __( '▶ Phát thử nghiệm', 'tts-reader' ),
+					'btnPause'   => __( '⏸ Tạm dừng', 'tts-reader' ),
 				),
 			)
 		);
 	}
 
 	/**
-	 * Xuất HTML trang "Tổng quan".
+	 * Xuất HTML trang "Tổng quan & Studio" hiện đại.
 	 */
 	public function render_dashboard() {
 		if ( ! current_user_can( 'manage_options' ) ) {
@@ -106,78 +105,268 @@ class TTS_Admin {
 				$post_type_names[] = $pt_obj->labels->name;
 			}
 		}
+
+		$engine_label = __( 'Google TTS Online', 'tts-reader' );
+		if ( $settings['engine'] === 'webspeech' ) {
+			$engine_label = __( 'Web Speech API', 'tts-reader' );
+		} elseif ( $settings['engine'] === 'auto' ) {
+			$engine_label = __( 'Tự động (Auto)', 'tts-reader' );
+		}
 		?>
-		<div class="wrap tts-admin-wrap">
-			<h1>
-				<span class="dashicons dashicons-controls-volumeon" style="font-size:26px;width:26px;height:26px;"></span>
-				<?php esc_html_e( 'Text to Speech Reader', 'tts-reader' ); ?>
-			</h1>
-			<p class="description"><?php esc_html_e( 'Trang quản lý tổng quan cho tính năng đọc bài viết bằng giọng nói.', 'tts-reader' ); ?></p>
+		<div class="wrap tts-admin-dashboard">
 
-			<div class="tts-admin-grid">
-
-				<div class="tts-admin-card">
-					<h2><?php esc_html_e( 'Trạng thái hiện tại', 'tts-reader' ); ?></h2>
-					<table class="widefat striped">
-						<tbody>
-							<tr>
-								<td><?php esc_html_e( 'Nút đọc bài viết', 'tts-reader' ); ?></td>
-								<td><span class="tts-badge tts-badge-on"><?php esc_html_e( 'Đang bật', 'tts-reader' ); ?></span></td>
-							</tr>
-							<tr>
-								<td><?php esc_html_e( 'Áp dụng cho', 'tts-reader' ); ?></td>
-								<td><?php echo $post_type_names ? esc_html( implode( ', ', $post_type_names ) ) : esc_html__( 'Chưa chọn loại nội dung nào', 'tts-reader' ); ?></td>
-							</tr>
-							<tr>
-								<td><?php esc_html_e( 'Ngôn ngữ giọng đọc', 'tts-reader' ); ?></td>
-								<td><code><?php echo esc_html( $settings['default_lang'] ); ?></code></td>
-							</tr>
-							<tr>
-								<td><?php esc_html_e( 'Tốc độ đọc mặc định', 'tts-reader' ); ?></td>
-								<td><?php echo esc_html( $settings['default_rate'] ); ?>x</td>
-							</tr>
-						</tbody>
-					</table>
-					<p>
-						<a href="<?php echo esc_url( $settings_url ); ?>" class="button button-primary">
-							<?php esc_html_e( 'Đi tới Cài đặt', 'tts-reader' ); ?>
-						</a>
+			<!-- Hero Banner -->
+			<div class="tts-hero-banner">
+				<div class="tts-hero-content">
+					<div class="tts-hero-badge">
+						<span class="tts-pulse-dot"></span>
+						<span><?php esc_html_e( 'Phiên bản 3.0.0 Pro Edition', 'tts-reader' ); ?></span>
+					</div>
+					<h1 class="tts-hero-title">
+						<span class="tts-hero-icon">🎙️</span>
+						<?php esc_html_e( 'Text to Speech Reader AI', 'tts-reader' ); ?>
+					</h1>
+					<p class="tts-hero-desc">
+						<?php esc_html_e( 'Giải pháp đọc bài viết tự động chuẩn tiếng Việt: Tự động tô sáng đúng một chữ đang được đọc theo thời gian thực và hỗ trợ tải MP3 nghe offline.', 'tts-reader' ); ?>
 					</p>
+					<div class="tts-hero-actions">
+						<a href="<?php echo esc_url( $settings_url ); ?>" class="tts-btn tts-btn-primary">
+							<span class="dashicons dashicons-admin-generic"></span>
+							<?php esc_html_e( 'Tuỳ chỉnh Cài đặt', 'tts-reader' ); ?>
+						</a>
+						<a href="#tts-studio-card" class="tts-btn tts-btn-secondary">
+							<span class="dashicons dashicons-controls-volumeon"></span>
+							<?php esc_html_e( 'Mở Studio Thử Giọng', 'tts-reader' ); ?>
+						</a>
+					</div>
+				</div>
+				<div class="tts-hero-visual" aria-hidden="true">
+					<div class="tts-hero-circle tts-circle-1"></div>
+					<div class="tts-hero-circle tts-circle-2"></div>
+					<div class="tts-hero-waves">
+						<span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Quick Stats Row -->
+			<div class="tts-stats-row">
+				<div class="tts-stat-card">
+					<div class="tts-stat-icon tts-icon-purple">🌐</div>
+					<div class="tts-stat-info">
+						<div class="tts-stat-label"><?php esc_html_e( 'Bộ máy (Engine)', 'tts-reader' ); ?></div>
+						<div class="tts-stat-value"><?php echo esc_html( $engine_label ); ?></div>
+						<div class="tts-stat-sub"><span class="tts-dot-green"></span> <?php esc_html_e( 'Tiếng Việt tự nhiên', 'tts-reader' ); ?></div>
+					</div>
 				</div>
 
-				<div class="tts-admin-card">
-					<h2><?php esc_html_e( 'Kiểm tra giọng đọc tiếng Việt', 'tts-reader' ); ?></h2>
-					<p><?php esc_html_e( 'Danh sách giọng đọc phụ thuộc vào trình duyệt và hệ điều hành của từng máy, không phải của server. Nhấn nút bên dưới để kiểm tra trên trình duyệt bạn đang dùng.', 'tts-reader' ); ?></p>
-					<button type="button" id="tts-admin-check-voice" class="button">
-						<?php esc_html_e( 'Kiểm tra giọng hệ thống', 'tts-reader' ); ?>
-					</button>
-					<button type="button" id="tts-admin-test-play" class="button">
-						<?php esc_html_e( 'Nghe thử (Web Speech)', 'tts-reader' ); ?>
-					</button>
-					<button type="button" id="tts-admin-test-google" class="button button-primary">
-						<?php esc_html_e( '🔊 Nghe thử Google TTS', 'tts-reader' ); ?>
-					</button>
-					<div id="tts-admin-voice-result" class="tts-admin-voice-result"></div>
+				<div class="tts-stat-card">
+					<div class="tts-stat-icon tts-icon-blue">📄</div>
+					<div class="tts-stat-info">
+						<div class="tts-stat-label"><?php esc_html_e( 'Phạm vi hiển thị', 'tts-reader' ); ?></div>
+						<div class="tts-stat-value"><?php echo count( $enabled_types ); ?> <?php esc_html_e( 'Loại nội dung', 'tts-reader' ); ?></div>
+						<div class="tts-stat-sub"><?php echo $post_type_names ? esc_html( implode( ', ', $post_type_names ) ) : esc_html__( 'Chưa chọn', 'tts-reader' ); ?></div>
+					</div>
 				</div>
 
-				<div class="tts-admin-card">
-					<h2><?php esc_html_e( 'Hướng dẫn nhanh', 'tts-reader' ); ?></h2>
-					<ol>
-						<li><?php esc_html_e( 'Vào tab Cài đặt để chọn loại nội dung áp dụng và vị trí nút.', 'tts-reader' ); ?></li>
-						<li><?php esc_html_e( 'Nút "Nghe bài viết" sẽ tự động xuất hiện trong bài viết/trang tương ứng.', 'tts-reader' ); ?></li>
-						<li>
+				<div class="tts-stat-card">
+					<div class="tts-stat-icon tts-icon-amber">✨</div>
+					<div class="tts-stat-info">
+						<div class="tts-stat-label"><?php esc_html_e( 'Highlight chữ đang đọc', 'tts-reader' ); ?></div>
+						<div class="tts-stat-value">
+							<?php if ( ! empty( $settings['enable_highlight'] ) ) : ?>
+								<span class="tts-badge tts-badge-success"><?php esc_html_e( '1 Chữ duy nhất', 'tts-reader' ); ?></span>
+							<?php else : ?>
+								<span class="tts-badge tts-badge-off"><?php esc_html_e( 'Đang tắt', 'tts-reader' ); ?></span>
+							<?php endif; ?>
+						</div>
+						<div class="tts-stat-sub">
 							<?php
-							printf(
-								/* translators: %s: shortcode example */
-								esc_html__( 'Muốn chèn thủ công một đoạn văn bản riêng, dùng shortcode: %s', 'tts-reader' ),
-								'<code>[tts_reader]' . esc_html__( 'Nội dung cần đọc', 'tts-reader' ) . '[/tts_reader]</code>'
+							$color_names = array(
+								'yellow'  => 'Vàng rực',
+								'emerald' => 'Xanh ngọc',
+								'blue'    => 'Xanh dương',
+								'orange'  => 'Cam đào',
 							);
+							$c_label = isset( $color_names[ $settings['highlight_color'] ] ) ? $color_names[ $settings['highlight_color'] ] : $settings['highlight_color'];
+							printf( esc_html__( 'Màu: %s %s', 'tts-reader' ), esc_html( $c_label ), ! empty( $settings['auto_scroll'] ) ? '• Cuộn mượt' : '' );
 							?>
-						</li>
-					</ol>
+						</div>
+					</div>
+				</div>
+
+				<div class="tts-stat-card">
+					<div class="tts-stat-icon tts-icon-green">📥</div>
+					<div class="tts-stat-info">
+						<div class="tts-stat-label"><?php esc_html_e( 'Tải file MP3', 'tts-reader' ); ?></div>
+						<div class="tts-stat-value">
+							<?php if ( ! empty( $settings['enable_download'] ) ) : ?>
+								<span class="tts-badge tts-badge-success"><?php esc_html_e( 'Đang bật', 'tts-reader' ); ?></span>
+							<?php else : ?>
+								<span class="tts-badge tts-badge-off"><?php esc_html_e( 'Đang tắt', 'tts-reader' ); ?></span>
+							<?php endif; ?>
+						</div>
+						<div class="tts-stat-sub"><?php esc_html_e( 'Hỗ trợ ghép MP3 nhị phân', 'tts-reader' ); ?></div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Main 2-Column Grid -->
+			<div class="tts-admin-columns">
+
+				<!-- Left Column: Voice Studio Card -->
+				<div class="tts-column-main">
+					<div id="tts-studio-card" class="tts-card tts-studio-card">
+						<div class="tts-card-header">
+							<div class="tts-card-title-group">
+								<h2 class="tts-card-title">
+									<span class="dashicons dashicons-format-audio"></span>
+									<?php esc_html_e( 'Voice Studio & Nghe Thử Trực Tiếp', 'tts-reader' ); ?>
+								</h2>
+								<p class="tts-card-subtitle"><?php esc_html_e( 'Kiểm tra tốc độ đọc, thử nghiệm hiệu ứng tô sáng 1 chữ duy nhất theo thời gian thực.', 'tts-reader' ); ?></p>
+							</div>
+							<span class="tts-tag-pill"><?php esc_html_e( 'Live Test', 'tts-reader' ); ?></span>
+						</div>
+
+						<div class="tts-card-body">
+							<!-- Speed in Studio -->
+							<div class="tts-form-group" style="max-width: 200px;">
+								<label for="tts-studio-speed-select"><?php esc_html_e( 'Tốc Độ Đọc:', 'tts-reader' ); ?></label>
+								<select id="tts-studio-speed-select" class="tts-select">
+									<option value="0.75">0.75x (Chậm rãi)</option>
+									<option value="1" selected>1.0x (Chuẩn tự nhiên)</option>
+									<option value="1.25">1.25x (Nhanh vừa)</option>
+									<option value="1.5">1.5x (Nhanh)</option>
+								</select>
+							</div>
+
+							<!-- Text Preview / Edit -->
+							<div class="tts-form-group" style="margin-top:16px;">
+								<label for="tts-studio-textarea"><?php esc_html_e( 'Nội dung kiểm tra (Có thể sửa trực tiếp):', 'tts-reader' ); ?></label>
+								<textarea id="tts-studio-textarea" class="tts-textarea" rows="4"><?php esc_html_e( 'Xin chào quý độc giả! Đây là tính năng đọc bài viết thông minh của plugin Text to Speech Reader. Từng chữ bạn đang nghe sẽ tự động được tô sáng trên màn hình, giúp việc theo dõi nội dung trở nên trực quan và thú vị hơn bao giờ hết.', 'tts-reader' ); ?></textarea>
+							</div>
+
+							<!-- Live Word Highlight Simulation Box -->
+							<div class="tts-form-group">
+								<label><?php esc_html_e( 'Xem trước hiệu ứng Highlight 1 chữ duy nhất đang đọc:', 'tts-reader' ); ?></label>
+								<div id="tts-studio-highlight-preview" class="tts-preview-box">
+									<!-- Words injected by JS -->
+								</div>
+							</div>
+
+							<!-- Audio Visualizer Equalizer Bar -->
+							<div class="tts-studio-player-bar">
+								<div class="tts-player-actions">
+									<button type="button" id="tts-studio-play-btn" class="tts-btn tts-btn-accent">
+										<span class="dashicons dashicons-controls-play"></span>
+										<span class="tts-btn-text"><?php esc_html_e( 'Phát thử nghiệm', 'tts-reader' ); ?></span>
+									</button>
+									<button type="button" id="tts-studio-stop-btn" class="tts-btn tts-btn-outline" style="display:none;">
+										<span class="dashicons dashicons-controls-square"></span>
+										<span><?php esc_html_e( 'Dừng', 'tts-reader' ); ?></span>
+									</button>
+								</div>
+
+								<!-- 9-bar animated equalizer -->
+								<div class="tts-equalizer" id="tts-studio-equalizer">
+									<span class="bar bar-1"></span>
+									<span class="bar bar-2"></span>
+									<span class="bar bar-3"></span>
+									<span class="bar bar-4"></span>
+									<span class="bar bar-5"></span>
+									<span class="bar bar-6"></span>
+									<span class="bar bar-7"></span>
+									<span class="bar bar-8"></span>
+									<span class="bar bar-9"></span>
+								</div>
+
+								<div class="tts-player-status" id="tts-studio-status">
+									<?php esc_html_e( 'Sẵn sàng phát thử', 'tts-reader' ); ?>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Right Column: Shortcode Generator & Features -->
+				<div class="tts-column-side">
+
+					<!-- Shortcode Generator -->
+					<div class="tts-card tts-shortcode-card">
+						<div class="tts-card-header">
+							<h3 class="tts-card-title">
+								<span class="dashicons dashicons-shortcode"></span>
+								<?php esc_html_e( 'Tạo Mã Shortcode', 'tts-reader' ); ?>
+							</h3>
+						</div>
+						<div class="tts-card-body">
+							<p class="tts-muted"><?php esc_html_e( 'Chèn nút đọc cho một đoạn văn bản hoặc khối nội dung bất kỳ trong Elementor, Gutenberg hoặc Classic Editor.', 'tts-reader' ); ?></p>
+
+							<div class="tts-form-group">
+								<label for="tts-sc-rate"><?php esc_html_e( 'Tốc độ đọc:', 'tts-reader' ); ?></label>
+								<select id="tts-sc-rate" class="tts-select">
+									<option value="1">1.0x (Bình thường)</option>
+									<option value="0.75">0.75x (Chậm)</option>
+									<option value="1.25">1.25x (Nhanh vừa)</option>
+									<option value="1.5">1.5x (Nhanh)</option>
+								</select>
+							</div>
+
+							<div class="tts-form-group">
+								<label for="tts-sc-text"><?php esc_html_e( 'Nội dung đọc:', 'tts-reader' ); ?></label>
+								<input type="text" id="tts-sc-text" class="tts-input" value="Nội dung cần đọc to..." />
+							</div>
+
+							<div class="tts-form-group">
+								<label><?php esc_html_e( 'Mã shortcode sinh tự động:', 'tts-reader' ); ?></label>
+								<div class="tts-code-box">
+									<code id="tts-generated-shortcode">[tts_reader rate="1"]Nội dung cần đọc to...[/tts_reader]</code>
+								</div>
+							</div>
+
+							<button type="button" id="tts-copy-shortcode-btn" class="tts-btn tts-btn-primary tts-btn-block">
+								<span class="dashicons dashicons-admin-page"></span>
+								<span class="tts-copy-label"><?php esc_html_e( 'Sao chép Shortcode', 'tts-reader' ); ?></span>
+							</button>
+						</div>
+					</div>
+
+					<!-- Feature Highlights Card -->
+					<div class="tts-card tts-info-card" style="margin-top:20px;">
+						<div class="tts-card-header">
+							<h3 class="tts-card-title">
+								<span class="dashicons dashicons-star-filled" style="color:#eab308;"></span>
+								<?php esc_html_e( 'Tính Năng Nổi Bật', 'tts-reader' ); ?>
+							</h3>
+						</div>
+						<div class="tts-card-body">
+							<ul class="tts-feature-list">
+								<li>
+									<strong>✨ Highlight 1 Chữ Duy Nhất:</strong>
+									<span>Đọc đến đâu chữ đó sáng lên rực rỡ và tự động cuộn trang theo dõi.</span>
+								</li>
+								<li>
+									<strong>📥 Tải File MP3:</strong>
+									<span>Cho phép người đọc tải bản ghi âm MP3 chất lượng cao về nghe offline.</span>
+								</li>
+								<li>
+									<strong>⚡ Ổn Định 100%:</strong>
+									<span>Giọng đọc Google chuẩn tiếng Việt phát qua proxy server, không nghẽn mạng.</span>
+								</li>
+							</ul>
+						</div>
+					</div>
+
 				</div>
 
 			</div>
+
+			<!-- Toast Notification for Copy -->
+			<div id="tts-admin-toast" class="tts-toast" aria-live="polite">
+				<span class="dashicons dashicons-yes-alt"></span>
+				<span class="tts-toast-text"></span>
+			</div>
+
 		</div>
 		<?php
 	}

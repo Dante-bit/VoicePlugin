@@ -3,7 +3,7 @@
  * Plugin Name:       Text to Speech Reader
  * Plugin URI:         https://example.com/plugins/text-to-speech-reader
  * Description:        Thêm nút "Đọc bài viết" vào bài viết/trang, sử dụng giọng nói của trình duyệt (Web Speech API) để đọc to nội dung. Hỗ trợ chọn giọng đọc, tốc độ, tạm dừng/tiếp tục.
- * Version:             2.0.0
+ * Version:             3.0.0
  * Requires at least:   5.8
  * Requires PHP:        7.4
  * Author:              Your Name
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
  * HẰNG SỐ CỦA PLUGIN
  * ------------------------------------------------------------------
  */
-define( 'TTS_READER_VERSION', '2.0.0' );
+define( 'TTS_READER_VERSION', '3.0.0' );
 define( 'TTS_READER_FILE', __FILE__ );
 define( 'TTS_READER_PATH', plugin_dir_path( __FILE__ ) );
 define( 'TTS_READER_URL', plugin_dir_url( __FILE__ ) );

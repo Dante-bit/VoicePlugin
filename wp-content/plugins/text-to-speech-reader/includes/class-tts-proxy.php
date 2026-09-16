@@ -27,19 +27,17 @@ class TTS_Proxy {
 	 * Trả về audio/mpeg stream cho trình duyệt.
 	 */
 	public function handle() {
-		// Nonce kiểm tra (không bắt buộc cho người dùng chưa đăng nhập,
-		// nhưng rate limiting vẫn áp dụng thông qua WordPress).
 		$text = isset( $_GET['t'] ) ? sanitize_text_field( wp_unslash( $_GET['t'] ) ) : '';
 		$lang = isset( $_GET['l'] ) ? sanitize_text_field( wp_unslash( $_GET['l'] ) ) : 'vi';
 
-		// Giới hạn độ dài văn bản mỗi chunk.
+		// Giới hạn độ dài văn bản mỗi chunk (Google TTS tối ưu dưới 200 ký tự).
 		$text = mb_substr( $text, 0, 200 );
 
 		if ( empty( $text ) ) {
 			wp_die( '', '', array( 'response' => 400 ) );
 		}
 
-		// Chỉ cho phép ngôn ngữ hợp lệ (chỉ lấy phần 2 ký tự đầu, ví dụ "vi" từ "vi-VN").
+		// Chỉ cho phép mã ngôn ngữ hợp lệ.
 		$lang = preg_replace( '/[^a-z\-]/i', '', $lang );
 		$lang = substr( explode( '-', $lang )[0], 0, 5 );
 		if ( empty( $lang ) ) {
@@ -82,7 +80,7 @@ class TTS_Proxy {
 		// Gửi header cache và content type phù hợp.
 		header( 'Content-Type: audio/mpeg' );
 		header( 'Content-Length: ' . strlen( $body ) );
-		header( 'Cache-Control: public, max-age=3600' );
+		header( 'Cache-Control: public, max-age=86400' );
 		header( 'X-Robots-Tag: noindex' );
 
 		// Tắt mọi output buffer của WordPress trước khi xuất audio.
