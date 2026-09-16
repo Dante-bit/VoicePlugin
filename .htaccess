@@ -4,11 +4,11 @@
 <IfModule mod_rewrite.c>
 RewriteEngine On
 RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
-RewriteBase /PluginVoice/
+RewriteBase /VoicePlugin/
 RewriteRule ^index\.php$ - [L]
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . /PluginVoice/index.php [L]
+RewriteRule . /VoicePlugin/index.php [L]
 </IfModule>
 
 # END WordPress
