@@ -1,0 +1,227 @@
+/**
+ * Text to Speech Reader — front-end styles v2.0
+ * Giao diện player hiện đại với wave animation khi đang đọc.
+ */
+
+/* ---------------------------------------------------------------
+ * Container / wrapper
+ * --------------------------------------------------------------- */
+.tts-reader-wrapper {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	flex-wrap: wrap;
+	margin: 20px 0;
+	padding: 12px 16px;
+	border: 1.5px solid #d0d7e0;
+	border-radius: 12px;
+	background: linear-gradient( 135deg, #f5f8ff 0%, #eef2fb 100% );
+	font-size: 14px;
+	box-shadow: 0 2px 8px rgba( 0, 80, 200, 0.06 );
+	transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.tts-reader-wrapper.is-playing {
+	border-color: #2563eb;
+	box-shadow: 0 0 0 3px rgba( 37, 99, 235, 0.12 ), 0 2px 8px rgba( 37, 99, 235, 0.1 );
+}
+
+.tts-reader-wrapper.is-paused {
+	border-color: #f59e0b;
+	box-shadow: 0 0 0 3px rgba( 245, 158, 11, 0.12 );
+}
+
+/* ---------------------------------------------------------------
+ * Nút chính Play / Pause / Resume
+ * --------------------------------------------------------------- */
+.tts-reader-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 7px;
+	cursor: pointer;
+	border: none;
+	border-radius: 8px;
+	padding: 9px 16px;
+	background: linear-gradient( 135deg, #2563eb 0%, #1d4ed8 100% );
+	color: #fff;
+	font-size: 13.5px;
+	font-weight: 600;
+	line-height: 1;
+	letter-spacing: 0.01em;
+	box-shadow: 0 2px 6px rgba( 37, 99, 235, 0.28 );
+	transition: background 0.2s ease, box-shadow 0.2s ease, transform 0.1s ease;
+	user-select: none;
+}
+
+.tts-reader-btn:hover {
+	background: linear-gradient( 135deg, #1d4ed8 0%, #1e40af 100% );
+	box-shadow: 0 4px 12px rgba( 37, 99, 235, 0.38 );
+	transform: translateY( -1px );
+}
+
+.tts-reader-btn:active {
+	transform: translateY( 0 );
+	box-shadow: 0 1px 4px rgba( 37, 99, 235, 0.28 );
+}
+
+/* ---------------------------------------------------------------
+ * Nút dừng (Stop)
+ * --------------------------------------------------------------- */
+.tts-reader-btn.tts-reader-stop {
+	background: linear-gradient( 135deg, #dc2626 0%, #b91c1c 100% );
+	box-shadow: 0 2px 6px rgba( 220, 38, 38, 0.28 );
+	padding: 9px 13px;
+}
+
+.tts-reader-btn.tts-reader-stop:hover {
+	background: linear-gradient( 135deg, #b91c1c 0%, #991b1b 100% );
+	box-shadow: 0 4px 12px rgba( 220, 38, 38, 0.38 );
+}
+
+/* ---------------------------------------------------------------
+ * Icon Play / Pause (SVG-mimic bằng CSS)
+ * ----------------------------------------------------------------
+ * .tts-icon-play có thuộc tính data-state="idle|playing|paused"
+ * ---------------------------------------------------------------- */
+.tts-icon {
+	display: inline-block;
+	width: 14px;
+	height: 14px;
+	flex-shrink: 0;
+	position: relative;
+}
+
+/* ---- Trạng thái idle: tam giác play ---- */
+.tts-icon-play[data-state="idle"],
+.tts-icon-play:not([data-state]) {
+	border-left: 13px solid #fff;
+	border-top: 8px solid transparent;
+	border-bottom: 8px solid transparent;
+	border-right: none;
+	width: 0;
+	height: 0;
+}
+
+/* ---- Trạng thái playing: hai gạch ngang (pause) ---- */
+.tts-icon-play[data-state="playing"] {
+	border-left: none;
+	border-top: none;
+	border-bottom: none;
+	width: 12px;
+	height: 14px;
+	background: transparent;
+	border-left: 4px solid #fff;
+	border-right: 4px solid #fff;
+	box-sizing: border-box;
+}
+
+/* ---- Trạng thái paused: tam giác play lại ---- */
+.tts-icon-play[data-state="paused"] {
+	border-left: 13px solid #fff;
+	border-top: 8px solid transparent;
+	border-bottom: 8px solid transparent;
+	border-right: none;
+	width: 0;
+	height: 0;
+}
+
+/* ---- Icon stop: hình vuông ---- */
+.tts-icon-stop {
+	background: #fff;
+	width: 11px;
+	height: 11px;
+	border-radius: 2px;
+}
+
+/* ---------------------------------------------------------------
+ * Sóng âm hoạt hoạ (Wave animation — chỉ hiện khi is-playing)
+ * --------------------------------------------------------------- */
+.tts-wave {
+	display: none;
+	align-items: flex-end;
+	gap: 3px;
+	height: 22px;
+	margin-left: 2px;
+}
+
+.tts-reader-wrapper.is-playing .tts-wave {
+	display: flex;
+}
+
+.tts-wave span {
+	display: inline-block;
+	width: 4px;
+	border-radius: 2px;
+	background: #2563eb;
+	animation: tts-wave-bar 0.9s ease-in-out infinite;
+	transform-origin: bottom;
+}
+
+.tts-wave span:nth-child(1) { animation-delay: 0s;    height: 8px; }
+.tts-wave span:nth-child(2) { animation-delay: 0.12s; height: 16px; }
+.tts-wave span:nth-child(3) { animation-delay: 0.24s; height: 22px; }
+.tts-wave span:nth-child(4) { animation-delay: 0.12s; height: 16px; }
+.tts-wave span:nth-child(5) { animation-delay: 0s;    height: 8px; }
+
+@keyframes tts-wave-bar {
+	0%, 100% { transform: scaleY( 0.35 ); opacity: 0.6; }
+	50%       { transform: scaleY( 1 );   opacity: 1; }
+}
+
+/* ---------------------------------------------------------------
+ * Chọn tốc độ đọc
+ * --------------------------------------------------------------- */
+.tts-reader-speed-label {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: #4b5563;
+	font-size: 13px;
+}
+
+.tts-reader-speed {
+	padding: 5px 8px;
+	border-radius: 6px;
+	border: 1.5px solid #cbd5e1;
+	background: #fff;
+	font-size: 13px;
+	cursor: pointer;
+	transition: border-color 0.2s ease;
+}
+
+.tts-reader-speed:focus {
+	outline: none;
+	border-color: #2563eb;
+	box-shadow: 0 0 0 2px rgba( 37, 99, 235, 0.15 );
+}
+
+/* ---------------------------------------------------------------
+ * Hộp thông báo / cảnh báo
+ * --------------------------------------------------------------- */
+.tts-reader-notice {
+	width: 100%;
+	font-size: 12px;
+	color: #92400e;
+	background: #fffbeb;
+	border: 1px solid #fcd34d;
+	border-radius: 6px;
+	padding: 7px 12px;
+	margin-top: 6px;
+	line-height: 1.5;
+}
+
+/* ---------------------------------------------------------------
+ * Khi không hỗ trợ Web Speech
+ * --------------------------------------------------------------- */
+.tts-unsupported {
+	font-size: 13px;
+	color: #6b7280;
+	font-style: italic;
+}
+
+/* ---------------------------------------------------------------
+ * Source content hidden wrapper
+ * --------------------------------------------------------------- */
+.tts-reader-source[hidden] {
+	display: none;
+}
