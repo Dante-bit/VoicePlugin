@@ -1,0 +1,15 @@
+# 1. BẢO MẬT - Không bao giờ push file cấu hình chứa pass Database
+wp-config.php
+
+# 2. Bỏ qua các file ảnh/media nặng (ảnh thì gửi file zip riêng)
+wp-content/uploads/
+
+# 3. Bỏ qua cache & file rác
+wp-content/cache/
+*.log
+*.zip
+*.sql
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
